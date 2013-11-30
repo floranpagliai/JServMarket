@@ -36,7 +36,7 @@ public class Jcommand {
         } else if (tokens[0].equalsIgnoreCase("addtocart") && tokens.length == 2) {
             addToCart(tokens[1]);
         } else if (tokens[0].equalsIgnoreCase("getcartcontent") && authentified_) {
-            test("SELECT * from cart where userid='" + clientId_ + "'");
+            getCartContent();
         } else if (tokens[0].equalsIgnoreCase("pay")) {
 
         } else if (tokens[0].equalsIgnoreCase("logout")) {
@@ -50,7 +50,7 @@ public class Jcommand {
         out_.flush();
     }
 
-    public void insertUser(String login, String pass) {
+    private void insertUser(String login, String pass) {
         if (!authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -71,7 +71,7 @@ public class Jcommand {
         out_.flush();
     }
 
-    public void authentificateUser(String login, String pass) {
+    private void authentificateUser(String login, String pass) {
         if (!authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -81,10 +81,8 @@ public class Jcommand {
                     authentified_ = true;
                     clientId_ = result.getInt("id");
                     out_.println("Bonjour " + login + ".");
-                } else {
+                } else
                     out_.println("Utilisateur inconu ou mot de passe erroné.");
-                    out_.flush();
-                }
                 state.close();
                 result.close();
             } catch (SQLException e) {
@@ -95,11 +93,11 @@ public class Jcommand {
         out_.flush();
     }
 
-    public void addToCart(String productId) {
+    private void addToCart(String productId) {
         if (authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
-                ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "'");
+                ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "' AND quantities != 0");
                 result.last();
                 if (result.getRow() == 1) {
                     result = state.executeQuery("SELECT id, quantity FROM cart WHERE userid='" + clientId_ + "' AND productid='" + productId + "'");
@@ -111,10 +109,8 @@ public class Jcommand {
                     } else
                         state.executeUpdate("INSERT INTO cart(userid, productid, quantity) VALUES('" + clientId_ + "', '" + productId + "', '" + 1 + "')");
                     out_.println("Le produit a été ajouté a votre panier.");
-                } else {
+                } else
                     out_.println("Le produit n'existe pas.");
-                    out_.flush();
-                }
                 state.close();
                 result.close();
             } catch (SQLException e) {
@@ -125,7 +121,43 @@ public class Jcommand {
         out_.flush();
     }
 
-    public void test(String query) {
+    private void getCartContent() {
+        if (authentified_) {
+            try {
+                Statement state = JconnexionSQL.getInstance().createStatement();
+                ResultSet result = state.executeQuery("SELECT designation, quantity, price FROM cart INNER JOIN products ON cart.productid = products.id  WHERE userid='" + clientId_ + "' ");
+                result.last();
+                Integer row;
+                if ((row = result.getRow()) >= 1) {
+                    result.beforeFirst();
+                    Integer sum = 0;
+                    while (result.next()) {
+                        out_.println("------------------------------------------------------------------------------");
+                        for (int i = 1 ; i < row ; i++) {
+                            String product = result.getString("designation");
+                            Integer price = result.getInt("price");
+                            Integer qte = result.getInt("quantity");
+                            sum += price * qte;
+                            out_.println(product + "  -  Quantité : " + qte + "  x  "+ price + "€  = " + qte * price);
+                        }
+                        out_.println("------------------------------------------------------------------------------");
+                    }
+                    out_.println("TOTAL : " + sum + " €");
+                } else {
+                    out_.println("Le panier est vide.");
+                    state.close();
+                    result.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else
+            out_.println("Veuillez vous authentifier.");
+        out_.flush();
+
+    }
+
+    private void test(String query) {
         try {
             Statement state = JconnexionSQL.getInstance().createStatement();
 
