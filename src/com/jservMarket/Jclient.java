@@ -1,4 +1,4 @@
-package com.jserveur;
+package com.jservMarket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * com.jserveur in Jserveur
+ * com.jservMarket in Jclient
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 15:39
  */

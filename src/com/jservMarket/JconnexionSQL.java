@@ -1,9 +1,9 @@
-package com.jserveur;
+package com.jservMarket;
 
 import java.sql.*;
 
 /**
- * com.jserveur in Jserveur
+ * com.jservMarket in Jserveur
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 18:26
  */

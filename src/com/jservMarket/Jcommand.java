@@ -1,10 +1,10 @@
-package com.jserveur;
+package com.jservMarket;
 
 import java.io.PrintWriter;
 import java.sql.*;
 
 /**
- * com.jserveur in Jserveur
+ * com.jservMarket in Jcommand
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 16:32
  */

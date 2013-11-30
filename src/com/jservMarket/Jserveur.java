@@ -1,11 +1,11 @@
-package com.jserveur;
+package com.jservMarket;
 
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.util.Vector;
 
 /**
- * com.jserveur in Jserveur
+ * com.jservMarket in Jserveur
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 15:05
  */
@@ -18,7 +18,7 @@ public class Jserveur {
     public static void main(String args[]) {
         Jserveur serveur = new Jserveur();
         try {
-            Integer port = 4242;
+            Integer port = 4243;
             ServerSocket ss = new ServerSocket(port.intValue());
             while (true) {
                 new Jclient(ss.accept(), serveur);
