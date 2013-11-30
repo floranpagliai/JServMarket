@@ -14,32 +14,30 @@ import java.sql.*;
 
 public class Jcommand {
     private PrintWriter out_;
-    private BufferedReader in_;
-    private int clientId_;
     private boolean authentified_ = false;
+    private Jclient client_;
 
-    Jcommand(PrintWriter out) {
+    Jcommand(PrintWriter out, Jclient client) {
         out_ = out;
-        in_ = new BufferedReader(new InputStreamReader(System.in));
+        client_ = client;
     }
 
-    public void exec(String command) {
-        String tokens[] = command.split("[;]");
-        if (tokens[0].equalsIgnoreCase("login") && tokens.length == 3) {
-            authentificateUser(tokens[1], tokens[2]);
-        } else if (tokens[0].equalsIgnoreCase("register") && tokens.length == 3) {
-            insertUser(tokens[1], tokens[2]);
-        } else if (tokens[0].equalsIgnoreCase("getproducts")) {
+    public void commands(String tokenCmds[]) {
+        if (tokenCmds[0].equalsIgnoreCase("login") && tokenCmds.length == 3) {
+            authentificateUser(tokenCmds[1], tokenCmds[2]);
+        } else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3) {
+            insertUser(tokenCmds[1], tokenCmds[2]);
+        } else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
             test("SELECT * from products");
-        } else if (tokens[0].equalsIgnoreCase("getcategories")) {
+        } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
             test("SELECT * from categories");
-        } else if (tokens[0].equalsIgnoreCase("addtocart") && tokens.length == 2) {
-            addToCart(tokens[1]);
-        } else if (tokens[0].equalsIgnoreCase("getcartcontent") && authentified_) {
+        } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2) {
+            addToCart(tokenCmds[1]);
+        } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && authentified_) {
             getCartContent();
-        } else if (tokens[0].equalsIgnoreCase("pay")) {
-
-        } else if (tokens[0].equalsIgnoreCase("logout")) {
+        } else if (tokenCmds[0].equalsIgnoreCase("pay")) {
+                      pay();
+        } else if (tokenCmds[0].equalsIgnoreCase("logout")) {
             authentified_ = false;
             out_.println("Aurevoir.");
         } else {
@@ -79,7 +77,7 @@ public class Jcommand {
                 result.last();
                 if (result.getRow() == 1) {
                     authentified_ = true;
-                    clientId_ = result.getInt("id");
+                    client_.clientId_ = result.getInt("id");
                     out_.println("Bonjour " + login + ".");
                 } else
                     out_.println("Utilisateur inconu ou mot de passe erroné.");
@@ -100,14 +98,14 @@ public class Jcommand {
                 ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "' AND quantities != 0");
                 result.last();
                 if (result.getRow() == 1) {
-                    result = state.executeQuery("SELECT id, quantity FROM cart WHERE userid='" + clientId_ + "' AND productid='" + productId + "'");
+                    result = state.executeQuery("SELECT id, quantity FROM cart WHERE userid='" + client_.clientId_ + "' AND productid='" + productId + "'");
                     result.last();
                     if (result.getRow() == 1) {
                         int id = result.getInt("id");
                         int qte = result.getInt("quantity") + 1;
                         state.executeUpdate("UPDATE cart SET quantity='" + qte + "' WHERE id='" + id + "'");
                     } else
-                        state.executeUpdate("INSERT INTO cart(userid, productid, quantity) VALUES('" + clientId_ + "', '" + productId + "', '" + 1 + "')");
+                        state.executeUpdate("INSERT INTO cart(userid, productid, quantity) VALUES('" + client_.clientId_ + "', '" + productId + "', '" + 1 + "')");
                     out_.println("Le produit a été ajouté a votre panier.");
                 } else
                     out_.println("Le produit n'existe pas.");
@@ -125,29 +123,25 @@ public class Jcommand {
         if (authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
-                ResultSet result = state.executeQuery("SELECT designation, quantity, price FROM cart INNER JOIN products ON cart.productid = products.id  WHERE userid='" + clientId_ + "' ");
+                ResultSet result = state.executeQuery("SELECT designation, quantity, price FROM cart INNER JOIN products ON cart.productid = products.id  WHERE userid='" + client_.clientId_ + "' ");
                 result.last();
-                Integer row;
-                if ((row = result.getRow()) >= 1) {
+                if (result.getRow() >= 1) {
                     result.beforeFirst();
                     Integer sum = 0;
+                    out_.println("------------------------------------------------------------------------------");
                     while (result.next()) {
-                        out_.println("------------------------------------------------------------------------------");
-                        for (int i = 1 ; i < row ; i++) {
-                            String product = result.getString("designation");
-                            Integer price = result.getInt("price");
-                            Integer qte = result.getInt("quantity");
-                            sum += price * qte;
-                            out_.println(product + "  -  Quantité : " + qte + "  x  "+ price + "€  = " + qte * price);
-                        }
+                        String product = result.getString("designation");
+                        Integer price = result.getInt("price");
+                        Integer qte = result.getInt("quantity");
+                        sum += price * qte;
+                        out_.println(product + "  -  Quantité : " + qte + "  x  " + price + "€  = " + qte * price + " €");
                         out_.println("------------------------------------------------------------------------------");
                     }
                     out_.println("TOTAL : " + sum + " €");
-                } else {
+                } else
                     out_.println("Le panier est vide.");
-                    state.close();
-                    result.close();
-                }
+                state.close();
+                result.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -155,6 +149,39 @@ public class Jcommand {
             out_.println("Veuillez vous authentifier.");
         out_.flush();
 
+    }
+
+    private void pay() {
+        if (authentified_) {
+            try {
+                Statement state = JconnexionSQL.getInstance().createStatement();
+                Statement state2 = JconnexionSQL.getInstance().createStatement();
+                ResultSet result = state.executeQuery("SELECT productid, quantities, quantity, price FROM cart INNER JOIN products ON cart.productid = products.id WHERE userid='" + client_.clientId_ + "' ");
+                result.last();
+                if (result.getRow() >= 1) {
+                    result.beforeFirst();
+                    Integer sum = 0;
+                    while (result.next()) {
+                        Integer productID = result.getInt("productid");
+                        Integer price = result.getInt("price");
+                        Integer cartQTE = result.getInt("quantity");
+                        Integer productQTE = result.getInt("quantities");
+                        state2.executeUpdate("UPDATE products SET quantities='" + (productQTE - cartQTE) + "' WHERE id='" + productID + "'");
+                        sum += price * cartQTE;
+                    }
+                    state.executeUpdate("DELETE FROM cart WHERE userid='" + client_.clientId_ + "' ");
+                    out_.println("Merci de votre achat : " + sum + " € payé.");
+
+                } else
+                    out_.println("Le panier est vide.");
+                state.close();
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else
+            out_.println("Veuillez vous authentifier.");
+        out_.flush();
     }
 
     private void test(String query) {

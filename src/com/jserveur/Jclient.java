@@ -20,6 +20,7 @@ class Jclient implements Runnable {
     private Jserveur serveur_;
     private Jcommand jcommand_;
     private int numClient_ = 0;
+    protected int clientId_;
 
     Jclient(Socket s, Jserveur serveur) {
         socket_ = s;
@@ -27,7 +28,7 @@ class Jclient implements Runnable {
         try {
             out_ = new PrintWriter(socket_.getOutputStream());
             in_ = new BufferedReader(new InputStreamReader(socket_.getInputStream()));
-            jcommand_ = new Jcommand(out_);
+            jcommand_ = new Jcommand(out_, this);
             numClient_ = serveur_.addClient(out_);
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,24 +39,30 @@ class Jclient implements Runnable {
 
     public void run() {
         String message = "";
-
-        System.out.println("Un nouveau client s'est connecte, no " + numClient_);
+        String tokens[];
+        System.out.println("Client " + numClient_ + ": connexion");
         try {
             char charCur[] = new char[1];
+            out_.print(">");
+            out_.flush();
             while (in_.read(charCur, 0, 1) != -1) {
                 if (charCur[0] != '\u0000' && charCur[0] != '\n' && charCur[0] != '\r')
                     message += charCur[0];
                 else if (!message.equalsIgnoreCase("")) {
-                    System.out.println(message);
-                    jcommand_.exec(message);
+                    tokens = message.split("[;]");
+                    System.out.println("Client " + numClient_ + ": " + tokens[0]);
+                    jcommand_.commands(tokens);
+                    out_.print(">");
+                    out_.flush();
                     message = "";
                 }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                System.out.println("Le client no " + numClient_ + " s'est deconnecte");
+                System.out.println("Client " + numClient_ + ": deconnexion");
                 serveur_.delClient(numClient_);
                 socket_.close();
             } catch (IOException e) {
