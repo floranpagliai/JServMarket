@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 
 /**
- * com.jservMarket in Jcommand
+ * com.jservMarket in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 16:32
  */
@@ -12,7 +12,7 @@ import java.sql.*;
 public class Jcommand {
     private PrintWriter out_;
     private Jclient client_;
-    private boolean authentified_ = false;
+
 
     Jcommand(PrintWriter out, Jclient client) {
         out_ = out;
@@ -30,12 +30,12 @@ public class Jcommand {
             showTable("SELECT * from categories");
         } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2) {
             addToCart(tokenCmds[1]);
-        } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && authentified_) {
+        } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && client_.authentified_) {
             getCartContent();
         } else if (tokenCmds[0].equalsIgnoreCase("pay")) {
             pay();
         } else if (tokenCmds[0].equalsIgnoreCase("logout")) {
-            authentified_ = false;
+            client_.authentified_ = false;
             out_.println("Aurevoir.");
         } else
             out_.println("Cette commande n'existe pas ou est mal formé.");
@@ -43,7 +43,7 @@ public class Jcommand {
     }
 
     private void insertUser(String login, String pass) {
-        if (!authentified_) {
+        if (!client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
                 ResultSet result = state.executeQuery("SELECT login FROM users WHERE login='" + login + "'");
@@ -64,13 +64,13 @@ public class Jcommand {
     }
 
     private void authentificateUser(String login, String pass) {
-        if (!authentified_) {
+        if (!client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
                 ResultSet result = state.executeQuery("SELECT id, login FROM users WHERE login='" + login + "' AND password=md5('" + pass + "')");
                 result.last();
                 if (result.getRow() == 1) {
-                    authentified_ = true;
+                    client_.authentified_ = true;
                     client_.clientId_ = result.getInt("id");
                     out_.println("Bonjour " + login + ".");
                 } else
@@ -86,7 +86,7 @@ public class Jcommand {
     }
 
     private void addToCart(String productId) {
-        if (authentified_) {
+        if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
                 ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "' AND quantities > 0");
@@ -114,7 +114,7 @@ public class Jcommand {
     }
 
     private void getCartContent() {
-        if (authentified_) {
+        if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
                 ResultSet result = state.executeQuery("SELECT designation, quantity, price FROM cart INNER JOIN products ON cart.productid = products.id  WHERE userid='" + client_.clientId_ + "' ");
@@ -146,7 +146,7 @@ public class Jcommand {
     }
 
     private void pay() {
-        if (authentified_) {
+        if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
                 Statement state2 = JconnexionSQL.getInstance().createStatement();

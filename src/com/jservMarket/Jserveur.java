@@ -5,21 +5,22 @@ import java.net.ServerSocket;
 import java.util.Vector;
 
 /**
- * com.jservMarket in Jserveur
+ * com.jservMarket in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 15:05
  */
 
 public class Jserveur {
 
-    private Vector clients_ = new Vector();
-    private int nbClients_ = 0;
+    private Vector<Jclient> clients_ = new Vector();
+    protected int nbClients_ = 0;
 
     public static void main(String args[]) {
         Jserveur serveur = new Jserveur();
         try {
             Integer port = 4243;
             ServerSocket ss = new ServerSocket(port.intValue());
+            new Jview(serveur);
             while (true) {
                 new Jclient(ss.accept(), serveur);
             }
@@ -28,9 +29,9 @@ public class Jserveur {
         }
     }
 
-    synchronized public int addClient(PrintWriter out) {
+    synchronized public int addClient(Jclient client) {
         nbClients_++;
-        clients_.addElement(out);
+        clients_.addElement(client);
         return clients_.size() - 1;
     }
 
@@ -39,5 +40,18 @@ public class Jserveur {
         if (clients_.elementAt(i) != null) {
             clients_.removeElementAt(i);
         }
+    }
+
+    public int getClients() {
+        return nbClients_;
+    }
+
+    public int getClientsLogged() {
+        int sum = 0;
+        for (int i = 0 ; i < nbClients_ ; i++) {
+            if (clients_.get(i).authentified_)
+                sum++;
+            }
+        return sum;
     }
 }

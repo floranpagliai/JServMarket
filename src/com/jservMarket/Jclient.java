@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * com.jservMarket in Jclient
+ * com.jservMarket in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 29/11/2013 at 15:39
  */
@@ -21,6 +21,7 @@ class Jclient implements Runnable {
     private Jcommand jcommand_;
     private int numClient_ = 0;
     protected int clientId_;
+    protected boolean authentified_ = false;
 
     Jclient(Socket s, Jserveur serveur) {
         socket_ = s;
@@ -29,7 +30,7 @@ class Jclient implements Runnable {
             out_ = new PrintWriter(socket_.getOutputStream());
             in_ = new BufferedReader(new InputStreamReader(socket_.getInputStream()));
             jcommand_ = new Jcommand(out_, this);
-            numClient_ = serveur_.addClient(out_);
+            numClient_ = serveur_.addClient(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
