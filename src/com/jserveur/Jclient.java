@@ -41,16 +41,11 @@ class Jclient implements Runnable {
 
         System.out.println("Un nouveau client s'est connecte, no " + numClient_);
         try {
-            // la lecture des données entrantes se fait caractère par caractère ...
-            // ... jusqu'à trouver un caractère de fin de chaine
-            char charCur[] = new char[1]; // déclaration d'un tableau de char d'1 élement, in_.read() y stockera le char lu
-            while (in_.read(charCur, 0, 1) != -1) // attente en boucle des messages provenant du client (bloquant sur in_.read())
-            {
-                // on regarde si on arrive à la fin d'une chaine ...
+            char charCur[] = new char[1];
+            while (in_.read(charCur, 0, 1) != -1) {
                 if (charCur[0] != '\u0000' && charCur[0] != '\n' && charCur[0] != '\r')
-                    message += charCur[0]; // ... si non, on concatène le caractère dans le message
-                else if (!message.equalsIgnoreCase("")) // juste une vérification de principe
-                {
+                    message += charCur[0];
+                else if (!message.equalsIgnoreCase("")) {
                     System.out.println(message);
                     jcommand_.exec(message);
                     message = "";

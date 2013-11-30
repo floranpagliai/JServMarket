@@ -15,7 +15,7 @@ import java.sql.*;
 public class Jcommand {
     private PrintWriter out_;
     private BufferedReader in_;
-    private int idClient_;
+    private int clientId_;
     private boolean authentified_ = false;
 
     Jcommand(PrintWriter out) {
@@ -34,11 +34,14 @@ public class Jcommand {
         } else if (tokens[0].equalsIgnoreCase("getcategories")) {
             test("SELECT * from categories");
         } else if (tokens[0].equalsIgnoreCase("addtocart") && tokens.length == 2) {
-
+            addToCart(tokens[1]);
         } else if (tokens[0].equalsIgnoreCase("getcartcontent") && authentified_) {
-            test("SELECT * from cart where userid='" + idClient_ + "'");
+            test("SELECT * from cart where userid='" + clientId_ + "'");
         } else if (tokens[0].equalsIgnoreCase("pay")) {
 
+        } else if (tokens[0].equalsIgnoreCase("logout")) {
+            authentified_ = false;
+            out_.println("Aurevoir.");
         } else {
             out_.println("Cette commande n'existe pas ou est mal formé.");
             //out_.println("Veuillez vous authentifier.");
@@ -56,8 +59,7 @@ public class Jcommand {
                 if (result.getRow() == 0) {
                     state.executeUpdate("INSERT INTO users(login, password) VALUES('" + login + "', md5('" + pass + "'))");
                     out_.println("Nouvel utilisateur enregistré.");
-                }
-                else
+                } else
                     out_.println("Un utilisateur utilise déjà ce pseudo.");
                 state.close();
                 result.close();
@@ -77,7 +79,7 @@ public class Jcommand {
                 result.last();
                 if (result.getRow() == 1) {
                     authentified_ = true;
-                    idClient_ = result.getInt("id");
+                    clientId_ = result.getInt("id");
                     out_.println("Bonjour " + login + ".");
                 } else {
                     out_.println("Utilisateur inconu ou mot de passe erroné.");
@@ -90,6 +92,36 @@ public class Jcommand {
             }
         } else
             out_.println("Vous êtes déjà connecté.");
+        out_.flush();
+    }
+
+    public void addToCart(String productId) {
+        if (authentified_) {
+            try {
+                Statement state = JconnexionSQL.getInstance().createStatement();
+                ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "'");
+                result.last();
+                if (result.getRow() == 1) {
+                    result = state.executeQuery("SELECT id, quantity FROM cart WHERE userid='" + clientId_ + "' AND productid='" + productId + "'");
+                    result.last();
+                    if (result.getRow() == 1) {
+                        int id = result.getInt("id");
+                        int qte = result.getInt("quantity") + 1;
+                        state.executeUpdate("UPDATE cart SET quantity='" + qte + "' WHERE id='" + id + "'");
+                    } else
+                        state.executeUpdate("INSERT INTO cart(userid, productid, quantity) VALUES('" + clientId_ + "', '" + productId + "', '" + 1 + "')");
+                    out_.println("Le produit a été ajouté a votre panier.");
+                } else {
+                    out_.println("Le produit n'existe pas.");
+                    out_.flush();
+                }
+                state.close();
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else
+            out_.println("Veuillez vous authentifier.");
         out_.flush();
     }
 
