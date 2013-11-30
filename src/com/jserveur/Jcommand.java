@@ -24,60 +24,73 @@ public class Jcommand {
     }
 
     public void exec(String command) {
-        if (command.equalsIgnoreCase("login")) {
-            authentificateUser("floran", "pass");
-        } else if (command.equalsIgnoreCase("register")) {
-            insertUser("test", "pass");
-        } else if (command.equalsIgnoreCase("getproducts") && authentified_) {
+        String tokens[] = command.split("[;]");
+        if (tokens[0].equalsIgnoreCase("login") && tokens.length == 3) {
+            authentificateUser(tokens[1], tokens[2]);
+        } else if (tokens[0].equalsIgnoreCase("register") && tokens.length == 3) {
+            insertUser(tokens[1], tokens[2]);
+        } else if (tokens[0].equalsIgnoreCase("getproducts")) {
             test("SELECT * from products");
-        } else if (command.equalsIgnoreCase("getcategories") && authentified_) {
+        } else if (tokens[0].equalsIgnoreCase("getcategories")) {
             test("SELECT * from categories");
-        } else if (!authentified_) {
-            out_.println("Veuillez vous authentifier.");
-            out_.flush();
+        } else if (tokens[0].equalsIgnoreCase("addtocart") && tokens.length == 2) {
+
+        } else if (tokens[0].equalsIgnoreCase("getcartcontent") && authentified_) {
+            test("SELECT * from cart where userid='" + idClient_ + "'");
+        } else if (tokens[0].equalsIgnoreCase("pay")) {
+
         } else {
-            out_.println("Cette commande n'existe pas.");
-            out_.flush();
+            out_.println("Cette commande n'existe pas ou est mal formé.");
+            //out_.println("Veuillez vous authentifier.");
+
         }
+        out_.flush();
     }
 
     public void insertUser(String login, String pass) {
-        try {
-            Statement state = JconnexionSQL.getInstance().createStatement();
-            ResultSet result = state.executeQuery("SELECT login FROM users WHERE login='" + login + "'");
-            result.last();
-            if (result.getRow() == 0)
-                state.executeUpdate("INSERT INTO users(login, password) VALUES('" + login + "', md5('" + pass + "'))");
-            else {
-                out_.println("Un utilisateur utilise déjà ce pseudo.");
-                out_.flush();
+        if (!authentified_) {
+            try {
+                Statement state = JconnexionSQL.getInstance().createStatement();
+                ResultSet result = state.executeQuery("SELECT login FROM users WHERE login='" + login + "'");
+                result.last();
+                if (result.getRow() == 0) {
+                    state.executeUpdate("INSERT INTO users(login, password) VALUES('" + login + "', md5('" + pass + "'))");
+                    out_.println("Nouvel utilisateur enregistré.");
+                }
+                else
+                    out_.println("Un utilisateur utilise déjà ce pseudo.");
+                state.close();
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            state.close();
-            result.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } else
+            out_.println("Vous êtes déjà connecté.");
+        out_.flush();
     }
 
     public void authentificateUser(String login, String pass) {
-        try {
-            Statement state = JconnexionSQL.getInstance().createStatement();
-            ResultSet result = state.executeQuery("SELECT id, login FROM users WHERE login='" + login + "' AND password=md5('" + pass + "')");
-            result.last();
-            if (result.getRow() != 0) {
-                authentified_ = true;
-                while (result.next())
-                    System.out.println(result.getInt("id"));
+        if (!authentified_) {
+            try {
+                Statement state = JconnexionSQL.getInstance().createStatement();
+                ResultSet result = state.executeQuery("SELECT id, login FROM users WHERE login='" + login + "' AND password=md5('" + pass + "')");
+                result.last();
+                if (result.getRow() == 1) {
+                    authentified_ = true;
+                    idClient_ = result.getInt("id");
+                    out_.println("Bonjour " + login + ".");
+                } else {
+                    out_.println("Utilisateur inconu ou mot de passe erroné.");
+                    out_.flush();
+                }
+                state.close();
+                result.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            else {
-                out_.println("Utilisateur inconu ou mot de passe erroné.");
-                out_.flush();
-            }
-            state.close();
-            result.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } else
+            out_.println("Vous êtes déjà connecté.");
+        out_.flush();
     }
 
     public void test(String query) {
