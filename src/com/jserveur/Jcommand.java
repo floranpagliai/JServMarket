@@ -1,8 +1,5 @@
 package com.jserveur;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.*;
 
@@ -14,8 +11,8 @@ import java.sql.*;
 
 public class Jcommand {
     private PrintWriter out_;
-    private boolean authentified_ = false;
     private Jclient client_;
+    private boolean authentified_ = false;
 
     Jcommand(PrintWriter out, Jclient client) {
         out_ = out;
@@ -28,23 +25,20 @@ public class Jcommand {
         } else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3) {
             insertUser(tokenCmds[1], tokenCmds[2]);
         } else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
-            test("SELECT * from products");
+            showTable("SELECT * from products");
         } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
-            test("SELECT * from categories");
+            showTable("SELECT * from categories");
         } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2) {
             addToCart(tokenCmds[1]);
         } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && authentified_) {
             getCartContent();
         } else if (tokenCmds[0].equalsIgnoreCase("pay")) {
-                      pay();
+            pay();
         } else if (tokenCmds[0].equalsIgnoreCase("logout")) {
             authentified_ = false;
             out_.println("Aurevoir.");
-        } else {
+        } else
             out_.println("Cette commande n'existe pas ou est mal formé.");
-            //out_.println("Veuillez vous authentifier.");
-
-        }
         out_.flush();
     }
 
@@ -95,7 +89,7 @@ public class Jcommand {
         if (authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
-                ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "' AND quantities != 0");
+                ResultSet result = state.executeQuery("SELECT id FROM products WHERE id='" + productId + "' AND quantities > 0");
                 result.last();
                 if (result.getRow() == 1) {
                     result = state.executeQuery("SELECT id, quantity FROM cart WHERE userid='" + client_.clientId_ + "' AND productid='" + productId + "'");
@@ -108,7 +102,7 @@ public class Jcommand {
                         state.executeUpdate("INSERT INTO cart(userid, productid, quantity) VALUES('" + client_.clientId_ + "', '" + productId + "', '" + 1 + "')");
                     out_.println("Le produit a été ajouté a votre panier.");
                 } else
-                    out_.println("Le produit n'existe pas.");
+                    out_.println("Le produit n'existe pas ou n'est plus en stock.");
                 state.close();
                 result.close();
             } catch (SQLException e) {
@@ -184,7 +178,7 @@ public class Jcommand {
         out_.flush();
     }
 
-    private void test(String query) {
+    private void showTable(String query) {
         try {
             Statement state = JconnexionSQL.getInstance().createStatement();
 
