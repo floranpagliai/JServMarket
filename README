@@ -1,5 +1,12 @@
-<<<<<<< HEAD
 Jserveur
-=======
-Jserveur
->>>>>>> ff99f64b3958bf1084b697a49cec6e56176c104b
+
+Serveur Java multi-thread avec gestion de base de donnée SQL pour l'e-commerce.
+
+Commandes:
+    -login;username;password
+    -register;username;password
+    -getproducts
+    -getcategories
+    -addtocart;productId
+    -pay
+    -getcartcontent

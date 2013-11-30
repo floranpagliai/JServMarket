@@ -18,7 +18,7 @@ class Jclient implements Runnable {
     private PrintWriter out_;
     private BufferedReader in_;
     private Jserveur serveur_;
-    private Jcommand execCommand;
+    private Jcommand jcommand_;
     private int numClient_ = 0;
 
     Jclient(Socket s, Jserveur serveur) {
@@ -27,7 +27,7 @@ class Jclient implements Runnable {
         try {
             out_ = new PrintWriter(socket_.getOutputStream());
             in_ = new BufferedReader(new InputStreamReader(socket_.getInputStream()));
-            execCommand = new Jcommand(out_);
+            jcommand_ = new Jcommand(out_);
             numClient_ = serveur_.addClient(out_);
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,11 +51,8 @@ class Jclient implements Runnable {
                     message += charCur[0]; // ... si non, on concatène le caractère dans le message
                 else if (!message.equalsIgnoreCase("")) // juste une vérification de principe
                 {
-                    if (charCur[0] == '\u0000') // le dernier caractère était '\u0000' (char de terminaison nulle)
-                        // on envoi le message en disant qu'il faudra concaténer '\u0000' lors de l'envoi au client
-                        System.out.println(message);
-                    else System.out.println(message); // sinon on envoi le message à tous
-                    execCommand.exec(message);
+                    System.out.println(message);
+                    jcommand_.exec(message);
                     message = "";
                 }
             }
@@ -67,6 +64,7 @@ class Jclient implements Runnable {
                 serveur_.delClient(numClient_);
                 socket_.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

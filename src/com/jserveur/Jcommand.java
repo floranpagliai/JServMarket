@@ -4,11 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-
+import java.sql.*;
 
 /**
  * com.jserveur in Jserveur
@@ -18,7 +14,9 @@ import java.sql.Statement;
 
 public class Jcommand {
     private PrintWriter out_;
-    BufferedReader in_;
+    private BufferedReader in_;
+    private int idClient_;
+    private boolean authentified_ = false;
 
     Jcommand(PrintWriter out) {
         out_ = out;
@@ -27,39 +25,86 @@ public class Jcommand {
 
     public void exec(String command) {
         if (command.equalsIgnoreCase("login")) {
-            out_.println("veuillez vous identifier");
+            authentificateUser("floran", "pass");
+        } else if (command.equalsIgnoreCase("register")) {
+            insertUser("test", "pass");
+        } else if (command.equalsIgnoreCase("getproducts") && authentified_) {
+            test("SELECT * from products");
+        } else if (command.equalsIgnoreCase("getcategories") && authentified_) {
+            test("SELECT * from categories");
+        } else if (!authentified_) {
+            out_.println("Veuillez vous authentifier.");
             out_.flush();
-            test();
+        } else {
+            out_.println("Cette commande n'existe pas.");
+            out_.flush();
         }
     }
 
-    public void test() {
+    public void insertUser(String login, String pass) {
         try {
-        Statement state = JconnexionSQL.getInstance().createStatement();
-
-
-        //L'objet ResultSet contient le résultat de la requête SQL
-        ResultSet result = state.executeQuery("SELECT * FROM users");
-        //On récupère les MetaData
-        ResultSetMetaData resultMeta = result.getMetaData();
-
-        System.out.println("\n**********************************");
-        //On affiche le nom des colonnes
-        for (int i = 1 ; i <= resultMeta.getColumnCount() ; i++)
-            System.out.print("\t" + resultMeta.getColumnName(i).toUpperCase() + "\t *");
-
-        System.out.println("\n**********************************");
-
-        while (result.next()) {
-            for (int i = 1 ; i <= resultMeta.getColumnCount() ; i++)
-                System.out.print("\t" + result.getObject(i).toString() + "\t |");
-
-            System.out.println("\n---------------------------------");
-
+            Statement state = JconnexionSQL.getInstance().createStatement();
+            ResultSet result = state.executeQuery("SELECT login FROM users WHERE login='" + login + "'");
+            result.last();
+            if (result.getRow() == 0)
+                state.executeUpdate("INSERT INTO users(login, password) VALUES('" + login + "', md5('" + pass + "'))");
+            else {
+                out_.println("Un utilisateur utilise déjà ce pseudo.");
+                out_.flush();
+            }
+            state.close();
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
 
-        result.close();
-        state.close();
+    public void authentificateUser(String login, String pass) {
+        try {
+            Statement state = JconnexionSQL.getInstance().createStatement();
+            ResultSet result = state.executeQuery("SELECT id, login FROM users WHERE login='" + login + "' AND password=md5('" + pass + "')");
+            result.last();
+            if (result.getRow() != 0) {
+                authentified_ = true;
+                while (result.next())
+                    System.out.println(result.getInt("id"));
+            }
+            else {
+                out_.println("Utilisateur inconu ou mot de passe erroné.");
+                out_.flush();
+            }
+            state.close();
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void test(String query) {
+        try {
+            Statement state = JconnexionSQL.getInstance().createStatement();
+
+            //L'objet ResultSet contient le résultat de la requête SQL
+            ResultSet result = state.executeQuery(query);
+            //On récupère les MetaData
+            ResultSetMetaData resultMeta = result.getMetaData();
+
+            out_.println("**********************************");
+            //On affiche le nom des colonnes
+            for (int i = 1 ; i <= resultMeta.getColumnCount() ; i++)
+                out_.print(resultMeta.getColumnName(i).toUpperCase() + " | ");
+            out_.println("\n**********************************");
+
+            while (result.next()) {
+                for (int i = 1 ; i <= resultMeta.getColumnCount() ; i++) {
+                    if (result.getObject(i) != null)
+                        out_.print(result.getObject(i).toString() + " | ");
+                }
+                out_.println("\n---------------------------------");
+            }
+            out_.flush();
+            result.close();
+            state.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
