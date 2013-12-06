@@ -35,7 +35,7 @@ public class Jview extends JFrame implements Runnable {
         pan.add(nbClientsLogged);
         this.setContentPane(pan);
         while(true) {
-            nbClients.setText("Visiteur connectés : " + serveur_.getClients());
+            nbClients.setText("Visiteurs connectés : " + serveur_.getClients());
             nbClientsLogged.setText("Clients connectés : " + serveur_.getClientsLogged());
         }
     }

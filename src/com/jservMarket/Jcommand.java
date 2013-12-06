@@ -19,30 +19,8 @@ public class Jcommand {
         client_ = client;
     }
 
-    public void commands(String tokenCmds[]) {
-        if (tokenCmds[0].equalsIgnoreCase("login") && tokenCmds.length == 3) {
-            authentificateUser(tokenCmds[1], tokenCmds[2]);
-        } else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3) {
-            insertUser(tokenCmds[1], tokenCmds[2]);
-        } else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
-            showTable("SELECT * from products");
-        } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
-            showTable("SELECT * from categories");
-        } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2) {
-            addToCart(tokenCmds[1]);
-        } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && client_.authentified_) {
-            getCartContent();
-        } else if (tokenCmds[0].equalsIgnoreCase("pay")) {
-            pay();
-        } else if (tokenCmds[0].equalsIgnoreCase("logout")) {
-            client_.authentified_ = false;
-            out_.println("Aurevoir.");
-        } else
-            out_.println("Cette commande n'existe pas ou est mal formé.");
-        out_.flush();
-    }
-
-    private void insertUser(String login, String pass) {
+    protected String insertUser(String login, String pass) {
+        String message = "";
         if (!client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -50,20 +28,21 @@ public class Jcommand {
                 result.last();
                 if (result.getRow() == 0) {
                     state.executeUpdate("INSERT INTO users(login, password) VALUES('" + login + "', md5('" + pass + "'))");
-                    out_.println("Nouvel utilisateur enregistré.");
+                    message = "Nouvel utilisateur enregistré.";
                 } else
-                    out_.println("Un utilisateur utilise déjà ce pseudo.");
+                    message = "Un utilisateur utilise déjà ce pseudo.";
                 state.close();
                 result.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else
-            out_.println("Vous êtes déjà connecté.");
-        out_.flush();
+            message = "Vous êtes déjà connecté.";
+        return message;
     }
 
-    private void authentificateUser(String login, String pass) {
+    protected String authentificateUser(String login, String pass) {
+        String message = "";
         if (!client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -72,20 +51,20 @@ public class Jcommand {
                 if (result.getRow() == 1) {
                     client_.authentified_ = true;
                     client_.clientId_ = result.getInt("id");
-                    out_.println("Bonjour " + login + ".");
+                    message = "Bonjour " + login + ".";
                 } else
-                    out_.println("Utilisateur inconu ou mot de passe erroné.");
+                    message = "Utilisateur inconu ou mot de passe erroné.";
                 state.close();
                 result.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else
-            out_.println("Vous êtes déjà connecté.");
-        out_.flush();
+            message = "Vous êtes déjà connecté.";
+        return message;
     }
 
-    private void addToCart(String productId) {
+    protected void addToCart(String productId) {
         if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -113,7 +92,7 @@ public class Jcommand {
         out_.flush();
     }
 
-    private void getCartContent() {
+    protected void getCartContent() {
         if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -145,7 +124,7 @@ public class Jcommand {
 
     }
 
-    private void pay() {
+    protected void pay() {
         if (client_.authentified_) {
             try {
                 Statement state = JconnexionSQL.getInstance().createStatement();
@@ -178,7 +157,7 @@ public class Jcommand {
         out_.flush();
     }
 
-    private void showTable(String query) {
+    protected void showTable(String query) {
         try {
             Statement state = JconnexionSQL.getInstance().createStatement();
 

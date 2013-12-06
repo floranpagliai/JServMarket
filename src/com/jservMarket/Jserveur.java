@@ -1,6 +1,5 @@
 package com.jservMarket;
 
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.util.Vector;
 
@@ -17,10 +16,10 @@ public class Jserveur {
 
     public static void main(String args[]) {
         Jserveur serveur = new Jserveur();
+        new Jview(serveur);
         try {
             Integer port = 4243;
             ServerSocket ss = new ServerSocket(port.intValue());
-            new Jview(serveur);
             while (true) {
                 new Jclient(ss.accept(), serveur);
             }

@@ -52,7 +52,7 @@ class Jclient implements Runnable {
                 else if (!message.equalsIgnoreCase("")) {
                     tokens = message.split("[;]");
                     System.out.println("Client " + numClient_ + ": " + tokens[0]);
-                    jcommand_.commands(tokens);
+                    commands(tokens);
                     out_.print(">");
                     out_.flush();
                     message = "";
@@ -70,5 +70,28 @@ class Jclient implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void commands(String tokenCmds[]) {
+        if (tokenCmds[0].equalsIgnoreCase("login") && tokenCmds.length == 3) {
+            out_.println(jcommand_.authentificateUser(tokenCmds[1], tokenCmds[2]));
+        } else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3) {
+            out_.println(jcommand_.insertUser(tokenCmds[1], tokenCmds[2]));
+        } else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
+            jcommand_.showTable("SELECT * from products");
+        } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
+            jcommand_.showTable("SELECT * from categories");
+        } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2) {
+            jcommand_.addToCart(tokenCmds[1]);
+        } else if (tokenCmds[0].equalsIgnoreCase("getcartcontent") && authentified_) {
+            jcommand_.getCartContent();
+        } else if (tokenCmds[0].equalsIgnoreCase("pay")) {
+            jcommand_.pay();
+        } else if (tokenCmds[0].equalsIgnoreCase("logout")) {
+            authentified_ = false;
+            out_.println("Aurevoir.");
+        } else
+            out_.println("Cette commande n'existe pas ou est mal formé.");
+        out_.flush();
     }
 }
