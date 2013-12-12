@@ -46,4 +46,8 @@ public abstract class ADAO<T> {
      * @param obj
      */
     public abstract void delete(T obj);
+
+    public abstract int countRow();
+
+    public abstract int nbRow();
 }

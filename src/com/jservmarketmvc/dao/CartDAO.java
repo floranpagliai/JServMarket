@@ -113,4 +113,40 @@ public class CartDAO extends ADAO<CartModel> {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public int countRow() {
+        try {
+            ResultSet result = this.connect
+                    .createStatement(
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    ).executeQuery(
+                            "SELECT * FROM cart"
+                    );
+            result.last();
+            return result.getInt("id");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int nbRow() {
+        try {
+            ResultSet result = this.connect
+                    .createStatement(
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE
+                    ).executeQuery(
+                            "SELECT * FROM cart"
+                    );
+            result.last();
+            return result.getRow();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

@@ -1,7 +1,5 @@
 package com.jservmarketmvc.model;
 
-import java.util.Observable;
-
 /**
  * com.jservmarketmvc.model in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
@@ -57,10 +55,8 @@ public class UsersModel {
 
     @Override
     public String toString() {
-        String str = 	"LOGIN : " + this.getLogin() + "\n";
-        str += 			"ID : " + this.getId() + "\n";
-        str +=			"\n.....................................\n";
-
+        String str = "[" + this.getId() + "] " + this.getLogin() + "\n";
+        str += ".....................................";
         return str;
     }
 

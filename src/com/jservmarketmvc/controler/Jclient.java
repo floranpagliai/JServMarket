@@ -77,12 +77,12 @@ public class Jclient implements Runnable {
         else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3)
             out_.println(registerUser(tokenCmds[1], tokenCmds[2]));
         else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
-            for (int i = 1 ; i <= 100 ; i++) {
+            for (int i = 1 ; i <= daoModels_.getProductDAO().countRow();  i++) {
                 if (daoModels_.getProductDAO().find(i).getId() != -1)
                     out_.println(daoModels_.getProductDAO().find(i).toString());
             }
         } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
-            for (int i = 1 ; i <= 100 ; i++) {
+            for (int i = 1 ; i <= daoModels_.getCategoriesDAO().countRow(); i++) {
                 if (daoModels_.getCategoriesDAO().find(i).getId() != -1)
                     out_.println(daoModels_.getCategoriesDAO().find(i).toString());
             }
@@ -120,6 +120,7 @@ public class Jclient implements Runnable {
 
     private String addToCart(String cmd) {
         CartModel cart;
+        int idMax = daoModels_.getCartDAO().countRow();
         int id = -1;
         try {
             id = Integer.parseInt(cmd);
@@ -130,7 +131,7 @@ public class Jclient implements Runnable {
         boolean updated = false;
         if (this.userId_ != -1) {
             if (daoModels_.getProductDAO().find(id).getId() != -1) {
-                for (int i = 1 ; i <= 100 ; i++) {
+                for (int i = 1 ; i <= idMax ; i++) {
                     if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_ && daoModels_.getCartDAO().find(i).getProductId() == id) {
                         cart = daoModels_.getCartDAO().find(i);
                         cart.setQuantity(cart.getQuantity() + 1);
@@ -150,9 +151,10 @@ public class Jclient implements Runnable {
     private String getCartContent() {
         CartModel cart;
         String cartContent = "";
+        int idMax = daoModels_.getCartDAO().countRow();
         float sum = 0;
         if (this.userId_ != -1) {
-            for (int i = 1 ; i <= 100 ; i++) {
+            for (int i = 1 ; i <= idMax ; i++) {
                 if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_) {
                     cart = daoModels_.getCartDAO().find(i);
                     cartContent += cart.toString();//Recupération de l'affichage du produit
@@ -169,15 +171,16 @@ public class Jclient implements Runnable {
 
     private String pay() {
         CartModel cart;
+        int idMax = daoModels_.getCartDAO().countRow();
         int sum = 0;
         if (this.userId_ != -1) {
-            for (int i = 1 ; i <= 100 ; i++) {
+            for (int i = 1 ; i <= idMax ; i++) {
                 if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_)
                     sum++;
             }
             if (sum == 0)
                 return "Votre panier est vide.";
-            for (int i = 1 ; i <= 100 ; i++) {
+            for (int i = 1 ; i <= idMax ; i++) {
                 if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_) {
                     cart = daoModels_.getCartDAO().find(i);
                     ProductsModel product = daoModels_.getProductDAO().find(cart.getProductId());

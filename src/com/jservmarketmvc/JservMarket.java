@@ -1,7 +1,9 @@
 package com.jservmarketmvc;
 
+import com.jservmarketmvc.controler.Controler;
 import com.jservmarketmvc.dao.DAOModels;
 import com.jservmarketmvc.controler.Jclient;
+import com.jservmarketmvc.view.Jview;
 
 import java.net.ServerSocket;
 
@@ -18,6 +20,11 @@ public class JservMarket {
         try {
             Integer port = 4243;
             ServerSocket ss = new ServerSocket(port.intValue());
+            Jview jview = new Jview(daoModels);
+            Controler controler =  new Controler(daoModels, jview);
+            jview.printUsers.addActionListener(controler);
+            jview.printCategories.addActionListener(controler);
+            jview.printProducts.addActionListener(controler);
             while (true) {
                 new Jclient(ss.accept(), daoModels);
             }
