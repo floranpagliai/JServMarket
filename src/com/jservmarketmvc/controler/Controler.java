@@ -1,10 +1,12 @@
 package com.jservmarketmvc.controler;
 
+import com.jservmarketmvc.JservMarket;
 import com.jservmarketmvc.dao.DAOModels;
 import com.jservmarketmvc.view.Jview;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * com.jservmarketmvc.controler in JservMarket
@@ -15,10 +17,12 @@ import java.awt.event.ActionListener;
 public class Controler implements ActionListener {
     private DAOModels daoModels_;
     private Jview jview_;
+    private JservMarket server_;
 
-    public Controler(DAOModels daoModels, Jview jview) {
+    public Controler(DAOModels daoModels, Jview jview, JservMarket server) {
         this.daoModels_ = daoModels;
         this.jview_ = jview;
+        this.server_ = server;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -33,13 +37,17 @@ public class Controler implements ActionListener {
     }
 
     private Object[][] getUsers() {
-        Object table[][] = new Object[daoModels_.getUsersDAO().nbRow()][2];
+        Object table[][] = new Object[daoModels_.getUsersDAO().nbRow()][3];
         int idMax = daoModels_.getUsersDAO().countRow();
         int i = 0;
         for (int id = 1 ; id <= idMax; id++) {
             if (!daoModels_.getUsersDAO().find(id).isNull()) {
                 table[i][0] =  daoModels_.getUsersDAO().find(id).getId();
                 table[i][1] = daoModels_.getUsersDAO().find(id).getLogin();
+                if (this.server_.getUsersLogged(daoModels_.getUsersDAO().find(id).getId()))
+                    table[i][2] = true;
+                else
+                    table[i][2] = false;
                 i++;
             }
         }

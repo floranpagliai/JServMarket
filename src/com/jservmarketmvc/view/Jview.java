@@ -48,7 +48,7 @@ public class Jview extends JFrame implements Observer {
     }
 
     public void printUsers(Object[][] table) {
-        String  title[] = {"Id", "Login"};
+        String  title[] = {"Id", "Login", "Connecté ?"};
         this.remove(scrollPan);
         scrollPan = new JScrollPane(new JTable(table, title));
         this.getContentPane().add(scrollPan);

@@ -1,5 +1,6 @@
 package com.jservmarketmvc.controler;
 
+import com.jservmarketmvc.JservMarket;
 import com.jservmarketmvc.dao.DAOModels;
 import com.jservmarketmvc.model.CartModel;
 import com.jservmarketmvc.model.ProductsModel;
@@ -26,10 +27,12 @@ public class Jclient implements Runnable {
     private BufferedReader in_;
     private DAOModels daoModels_;
     private int userId_ = -1;
+    private JservMarket server_;
 
-    public Jclient(Socket s, DAOModels daoModels) {
+    public Jclient(Socket s, DAOModels daoModels, JservMarket server) {
         this.socket_ = s;
         this.daoModels_ = daoModels;
+        this.server_ = server;
         try {
             out_ = new PrintWriter(socket_.getOutputStream());
             in_ = new BufferedReader(new InputStreamReader(socket_.getInputStream()));
@@ -63,6 +66,7 @@ public class Jclient implements Runnable {
             e.printStackTrace();
         } finally {
             try {
+                this.server_.delUsersLogged(this.userId_);
                 this.userId_ = -1;
                 socket_.close();
             } catch (IOException e) {
@@ -77,12 +81,12 @@ public class Jclient implements Runnable {
         else if (tokenCmds[0].equalsIgnoreCase("register") && tokenCmds.length == 3)
             out_.println(registerUser(tokenCmds[1], tokenCmds[2]));
         else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
-            for (int i = 1 ; i <= daoModels_.getProductDAO().countRow();  i++) {
+            for (int i = 1 ; i <= daoModels_.getProductDAO().countRow() ; i++) {
                 if (daoModels_.getProductDAO().find(i).getId() != -1)
                     out_.println(daoModels_.getProductDAO().find(i).toString());
             }
         } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
-            for (int i = 1 ; i <= daoModels_.getCategoriesDAO().countRow(); i++) {
+            for (int i = 1 ; i <= daoModels_.getCategoriesDAO().countRow() ; i++) {
                 if (daoModels_.getCategoriesDAO().find(i).getId() != -1)
                     out_.println(daoModels_.getCategoriesDAO().find(i).toString());
             }
@@ -99,8 +103,12 @@ public class Jclient implements Runnable {
     private String authenticateUser(String login, String password) {
         if (this.userId_ == -1) {
             if (daoModels_.getUsersDAO().findByKey("login", login).getPassword().equalsIgnoreCase(md5(password))) {
-                this.userId_ = daoModels_.getUsersDAO().findByKey("login", login).getId();
-                return "Bonjour " + login + ".";
+                if (!this.server_.getUsersLogged(daoModels_.getUsersDAO().findByKey("login", login).getId())) {
+                    this.userId_ = daoModels_.getUsersDAO().findByKey("login", login).getId();
+                    this.server_.addUsersLogged(this.userId_);
+                    return "Bonjour " + login + ".";
+                } else
+                    return "Utilisateur déjà connecté.";
             } else
                 return "Utilisateur inconnu ou mot de passe erroné.";
         } else
@@ -126,7 +134,7 @@ public class Jclient implements Runnable {
             id = Integer.parseInt(cmd);
 
         } catch (NumberFormatException e) {
-            return  "Veuillez entrer un nombre.";
+            return "Veuillez entrer un nombre.";
         }
         boolean updated = false;
         if (this.userId_ != -1) {
