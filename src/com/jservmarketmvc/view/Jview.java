@@ -3,6 +3,7 @@ package com.jservmarketmvc.view;
 import com.jservmarketmvc.dao.DAOModels;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.util.Observable;
@@ -19,28 +20,35 @@ public class Jview extends JFrame implements Observer {
     public JButton printUsers = new JButton("Utillisateurs");
     public JButton printProducts = new JButton("Produits");
     public JButton printCategories = new JButton("Categories");
+    public JLabel usersConnected = new JLabel("");
     JScrollPane scrollPan = new JScrollPane(new JTable());
     JPanel btns = new JPanel();
-    public JTextArea console= new JTextArea();
+    JPanel head = new JPanel();
+    public JTextArea console = new JTextArea();
 
     public Jview(DAOModels daoModels) {
         this.daoModels_ = daoModels;
 
-
         this.setTitle("JservMarket");
-        this.setSize(900, 600);
+        this.setSize(700, 450);
         this.setLocationRelativeTo(null);
 
         this.getContentPane().setBackground(Color.LIGHT_GRAY);
 
         this.setLayout(new BorderLayout());
+        head.setLayout(new BorderLayout());
+
         btns.add(printUsers, BorderLayout.WEST);
         btns.add(printCategories, BorderLayout.CENTER);
         btns.add(printProducts, BorderLayout.EAST);
-        this.getContentPane().add(btns, BorderLayout.NORTH);
 
+        usersConnected.setHorizontalAlignment(SwingConstants.CENTER);
+
+        head.add(usersConnected, BorderLayout.NORTH);
+        head.add(btns, BorderLayout.CENTER);
+        this.getContentPane().add(head, BorderLayout.NORTH);
+;
         this.getContentPane().add(scrollPan, BorderLayout.CENTER);
-        this.getContentPane().add(console, BorderLayout.SOUTH);
         this.setVisible(true);
     }
 

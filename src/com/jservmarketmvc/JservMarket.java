@@ -8,6 +8,7 @@ import com.sun.xml.internal.xsom.impl.scd.Iterators;
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Vector;
 
 /**
@@ -17,7 +18,8 @@ import java.util.Vector;
  */
 
 public class JservMarket {
-    private Vector usersLogged = new Vector();
+    public Vector usersLogged = new Vector();
+    private Integer usersConnected = 0;
     public static void main(String args[]) {
         JservMarket serveur = new JservMarket();
 
@@ -36,6 +38,18 @@ public class JservMarket {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void addUsersConnected() {
+        this.usersConnected++;
+    }
+
+    public void delUsersConnected() {
+        this.usersConnected--;
+    }
+
+    public String getUsersConnected() {
+        return this.usersConnected.toString();
     }
 
     public void addUsersLogged(int id) {

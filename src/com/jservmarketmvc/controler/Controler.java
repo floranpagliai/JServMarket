@@ -6,7 +6,6 @@ import com.jservmarketmvc.view.Jview;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 /**
  * com.jservmarketmvc.controler in JservMarket
@@ -23,6 +22,8 @@ public class Controler implements ActionListener {
         this.daoModels_ = daoModels;
         this.jview_ = jview;
         this.server_ = server;
+        jview_.usersConnected.setText("Client(s) connecté(s) : " + server_.getUsersConnected()
+                + " ("+server_.usersLogged.size()+" authentifié(s))");
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -32,8 +33,8 @@ public class Controler implements ActionListener {
             jview_.printCategories(getCategories());
         else if (e.getSource() == jview_.printProducts)
             jview_.printProducts(getProducts());
-        jview_.console.setText(System.in.toString());
-
+        jview_.usersConnected.setText("Client(s) connecté(s) : " + server_.getUsersConnected()
+                + " ("+server_.usersLogged.size()+" authentifié(s))");
     }
 
     private Object[][] getUsers() {
@@ -45,9 +46,9 @@ public class Controler implements ActionListener {
                 table[i][0] =  daoModels_.getUsersDAO().find(id).getId();
                 table[i][1] = daoModels_.getUsersDAO().find(id).getLogin();
                 if (this.server_.getUsersLogged(daoModels_.getUsersDAO().find(id).getId()))
-                    table[i][2] = true;
+                    table[i][2] = "Yes";
                 else
-                    table[i][2] = false;
+                    table[i][2] = "No";
                 i++;
             }
         }

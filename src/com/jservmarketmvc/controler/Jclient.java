@@ -36,6 +36,7 @@ public class Jclient implements Runnable {
         try {
             out_ = new PrintWriter(socket_.getOutputStream());
             in_ = new BufferedReader(new InputStreamReader(socket_.getInputStream()));
+            this.server_.addUsersConnected();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,6 +67,7 @@ public class Jclient implements Runnable {
             e.printStackTrace();
         } finally {
             try {
+                this.server_.delUsersConnected();
                 this.server_.delUsersLogged(this.userId_);
                 this.userId_ = -1;
                 socket_.close();
