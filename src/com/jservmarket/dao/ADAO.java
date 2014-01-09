@@ -1,11 +1,11 @@
-package com.jservmarketmvc.dao;
+package com.jservmarket.dao;
 
-import com.jservmarketmvc.ConnexionMySQL;
+import com.jservmarket.ConnexionMySQL;
 
 import java.sql.Connection;
 
 /**
- * com.jservmarketmvc.dao in JservMarket
+ * com.jservmarket.dao in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 22:58
  */

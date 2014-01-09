@@ -1,10 +1,10 @@
-package com.jservmarketmvc.controler;
+package com.jservmarket.controler;
 
-import com.jservmarketmvc.JservMarket;
-import com.jservmarketmvc.dao.DAOModels;
-import com.jservmarketmvc.model.CartModel;
-import com.jservmarketmvc.model.ProductsModel;
-import com.jservmarketmvc.model.UsersModel;
+import com.jservmarket.JservMarket;
+import com.jservmarket.dao.DAOModels;
+import com.jservmarket.model.CartModel;
+import com.jservmarket.model.ProductsModel;
+import com.jservmarket.model.UsersModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +12,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import static com.jservmarketmvc.MD5.md5;
+import static com.jservmarket.MD5.md5;
 
 /**
- * com.jservmarketmvc.view in JservMarket
+ * com.jservmarket.view in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 04/12/2013 at 20:06
  */
@@ -140,20 +140,27 @@ public class Jclient implements Runnable {
         }
         boolean updated = false;
         if (this.userId_ != -1) {
-            if (daoModels_.getProductDAO().find(id).getId() != -1) {
+            if (daoModels_.getProductDAO().find(id).getId() != -1  && daoModels_.getProductDAO().find(id).getQuantities() > 0 ) {
                 for (int i = 1 ; i <= idMax ; i++) {
                     if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_ && daoModels_.getCartDAO().find(i).getProductId() == id) {
                         cart = daoModels_.getCartDAO().find(i);
                         cart.setQuantity(cart.getQuantity() + 1);
+                        ProductsModel product = daoModels_.getProductDAO().find(id);
+                        product.setQuantities(daoModels_.getProductDAO().find(id).getQuantities() - 1);
+                        daoModels_.getProductDAO().update(product);
                         daoModels_.getCartDAO().update(cart);
                         updated = true;
                     }
                 }
-                if (!updated)
+                if (!updated) {
+                    ProductsModel product = daoModels_.getProductDAO().find(id);
+                    product.setQuantities(daoModels_.getProductDAO().find(id).getQuantities() - 1);
+                    daoModels_.getProductDAO().update(product);
                     daoModels_.getCartDAO().create(new CartModel(this.userId_, id, 1));
+                }
                 return "Le produit a été ajouté a votre panier.";
             } else
-                return "Ce produit n'existe pas.";
+                return "Ce produit n'existe pas ou n'est pas en stock.";
         } else
             return "Veuillez vous authentifier.";
     }

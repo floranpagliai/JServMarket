@@ -1,9 +1,9 @@
-package com.jservmarketmvc.dao;
+package com.jservmarket.dao;
 
-import com.jservmarketmvc.model.*;
+import com.jservmarket.model.*;
 
 /**
- * com.jservmarketmvc.dao in JservMarket
+ * com.jservmarket.dao in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 05/12/2013 at 14:26
  */

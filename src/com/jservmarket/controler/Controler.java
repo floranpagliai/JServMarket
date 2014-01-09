@@ -1,14 +1,14 @@
-package com.jservmarketmvc.controler;
+package com.jservmarket.controler;
 
-import com.jservmarketmvc.JservMarket;
-import com.jservmarketmvc.dao.DAOModels;
-import com.jservmarketmvc.view.Jview;
+import com.jservmarket.JservMarket;
+import com.jservmarket.dao.DAOModels;
+import com.jservmarket.view.Jview;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * com.jservmarketmvc.controler in JservMarket
+ * com.jservmarket.controler in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 05/12/2013 at 03:02
  */

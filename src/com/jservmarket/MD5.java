@@ -1,4 +1,4 @@
-package com.jservmarketmvc;
+package com.jservmarket;
 
 import java.security.MessageDigest;
 

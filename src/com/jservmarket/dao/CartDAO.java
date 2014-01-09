@@ -1,13 +1,13 @@
-package com.jservmarketmvc.dao;
+package com.jservmarket.dao;
 
-import com.jservmarketmvc.model.CartModel;
+import com.jservmarket.model.CartModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * com.jservmarketmvc.dao in JservMarket
+ * com.jservmarket.dao in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 05/12/2013 at 16:07
  */

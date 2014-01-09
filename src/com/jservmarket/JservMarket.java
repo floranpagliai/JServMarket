@@ -1,9 +1,9 @@
-package com.jservmarketmvc;
+package com.jservmarket;
 
-import com.jservmarketmvc.controler.Controler;
-import com.jservmarketmvc.dao.DAOModels;
-import com.jservmarketmvc.controler.Jclient;
-import com.jservmarketmvc.view.Jview;
+import com.jservmarket.controler.Controler;
+import com.jservmarket.dao.DAOModels;
+import com.jservmarket.controler.Jclient;
+import com.jservmarket.view.Jview;
 import com.sun.xml.internal.xsom.impl.scd.Iterators;
 
 import java.net.ServerSocket;
@@ -12,7 +12,7 @@ import java.util.Observable;
 import java.util.Vector;
 
 /**
- * com.jservmarketmvc in JservMarket
+ * com.jservmarket in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 23:01
  */

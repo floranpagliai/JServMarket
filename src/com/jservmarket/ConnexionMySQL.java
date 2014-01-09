@@ -1,11 +1,11 @@
-package com.jservmarketmvc;
+package com.jservmarket;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * com.jservmarketmvc in JservMarket
+ * com.jservmarket in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 22:34
  */

@@ -1,7 +1,7 @@
-package com.jservmarketmvc.model;
+package com.jservmarket.model;
 
 /**
- * com.jservmarketmvc.model in JservMarket
+ * com.jservmarket.model in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 22:45
  */

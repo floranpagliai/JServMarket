@@ -1,6 +1,6 @@
-package com.jservmarketmvc.view;
+package com.jservmarket.view;
 
-import com.jservmarketmvc.dao.DAOModels;
+import com.jservmarket.dao.DAOModels;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -10,7 +10,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * com.jservmarketmvc.view in JservMarket
+ * com.jservmarket.view in JservMarket
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 10/12/2013 at 02:32
  */
