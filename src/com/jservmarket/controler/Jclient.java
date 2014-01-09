@@ -200,9 +200,9 @@ public class Jclient implements Runnable {
             for (int i = 1 ; i <= idMax ; i++) {
                 if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_) {
                     cart = daoModels_.getCartDAO().find(i);
-                    ProductsModel product = daoModels_.getProductDAO().find(cart.getProductId());
-                    product.setQuantities(product.getQuantities() - cart.getQuantity());//Soustraction dans le stock de la qte du panier
-                    daoModels_.getProductDAO().update(product);//Mise a jour du produit dans la BD
+                    //ProductsModel product = daoModels_.getProductDAO().find(cart.getProductId());
+                    //product.setQuantities(product.getQuantities() - cart.getQuantity());//Soustraction dans le stock de la qte du panier
+                    //daoModels_.getProductDAO().update(product);//Mise a jour du produit dans la BD
                     daoModels_.getCartDAO().delete(cart);//Suppression du produit dans le panier
                 }
             }
