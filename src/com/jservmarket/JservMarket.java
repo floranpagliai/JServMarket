@@ -4,11 +4,8 @@ import com.jservmarket.controler.Controler;
 import com.jservmarket.dao.DAOModels;
 import com.jservmarket.controler.Jclient;
 import com.jservmarket.view.Jview;
-import com.sun.xml.internal.xsom.impl.scd.Iterators;
 
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Vector;
 
 /**

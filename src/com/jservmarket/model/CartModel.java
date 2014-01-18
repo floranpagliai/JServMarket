@@ -91,8 +91,8 @@ public class CartModel {
 
     @Override
     public String toString() {
-        String str = this.getDesignation() + " : \n";
-        str += "\t" + this.getPrice() + " € x " + this.getQuantity() + " = " + this.getPrice()*this.getQuantity() + " €\n";
+        String str = "|" + this.getId() + ";" + this.getProductId() + ";" + this.getQuantity() + ";";
+        str += this.getDesignation() + ";" + this.getPrice();
 
         return str;
     }

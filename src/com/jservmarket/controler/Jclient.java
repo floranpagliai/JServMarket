@@ -49,16 +49,17 @@ public class Jclient implements Runnable {
         String tokens[];
         try {
             char charCur[] = new char[1];
-            out_.print(">");
-            out_.flush();
+            //out_.print(">");
+            //out_.flush();
             while (in_.read(charCur, 0, 1) != -1) {
                 if (charCur[0] != '\u0000' && charCur[0] != '\n' && charCur[0] != '\r')
                     message += charCur[0];
                 else if (!message.equalsIgnoreCase("")) {
                     tokens = message.split("[;]");
                     commands(tokens);
-                    out_.print(">");
+                    //out_.print(">");
                     out_.flush();
+                    System.out.println(message);
                     message = "";
                 }
 
@@ -85,8 +86,9 @@ public class Jclient implements Runnable {
         else if (tokenCmds[0].equalsIgnoreCase("getproducts")) {
             for (int i = 1 ; i <= daoModels_.getProductDAO().countRow() ; i++) {
                 if (daoModels_.getProductDAO().find(i).getId() != -1)
-                    out_.println(daoModels_.getProductDAO().find(i).toString());
+                    out_.print(daoModels_.getProductDAO().find(i).toString());
             }
+            out_.print("\n");
         } else if (tokenCmds[0].equalsIgnoreCase("getcategories")) {
             for (int i = 1 ; i <= daoModels_.getCategoriesDAO().countRow() ; i++) {
                 if (daoModels_.getCategoriesDAO().find(i).getId() != -1)
@@ -98,7 +100,10 @@ public class Jclient implements Runnable {
             out_.println(getCartContent());
         else if (tokenCmds[0].equalsIgnoreCase("pay"))
             out_.println(pay());
-        else
+        else if (tokenCmds[0].equalsIgnoreCase("logout")) {
+            this.server_.delUsersLogged(this.userId_);
+            this.userId_ = -1;
+        } else
             out_.println("Cette commande n'existe pas ou est malformée.");
     }
 
@@ -108,24 +113,24 @@ public class Jclient implements Runnable {
                 if (!this.server_.getUsersLogged(daoModels_.getUsersDAO().findByKey("login", login).getId())) {
                     this.userId_ = daoModels_.getUsersDAO().findByKey("login", login).getId();
                     this.server_.addUsersLogged(this.userId_);
-                    return "Bonjour " + login + ".";
+                    return "loginOk";
                 } else
-                    return "Utilisateur déjà connecté.";
+                    return "loginOtherLogged";
             } else
-                return "Utilisateur inconnu ou mot de passe erroné.";
+                return "loginError";
         } else
-            return "Vous êtes déjà connecté.";
+            return "loginLogged";
     }
 
     private String registerUser(String login, String password) {
         if (this.userId_ == -1) {
             if (!daoModels_.getUsersDAO().findByKey("login", login).getLogin().equalsIgnoreCase(login)) {
                 this.daoModels_.getUsersDAO().create(new UsersModel(login, md5(password)));
-                return "Nouvel utilisateur enregistré.";
+                return "registerOk";
             } else
-                return "Un utilisateur utilise déjà ce pseudo.";
+                return "registerError";
         } else
-            return "Vous êtes déjà connecté.";
+            return "loginLogged";
     }
 
     private String addToCart(String cmd) {
@@ -134,7 +139,6 @@ public class Jclient implements Runnable {
         int id = -1;
         try {
             id = Integer.parseInt(cmd);
-
         } catch (NumberFormatException e) {
             return "Veuillez entrer un nombre.";
         }
@@ -158,9 +162,9 @@ public class Jclient implements Runnable {
                     daoModels_.getProductDAO().update(product);
                     daoModels_.getCartDAO().create(new CartModel(this.userId_, id, 1));
                 }
-                return "Le produit a été ajouté a votre panier.";
+                return "addtocartOk";
             } else
-                return "Ce produit n'existe pas ou n'est pas en stock.";
+                return "addtocartError";
         } else
             return "Veuillez vous authentifier.";
     }
@@ -179,9 +183,9 @@ public class Jclient implements Runnable {
                 }
             }
             if (cartContent == "")
-                return "Votre panier est vide.";
+                return "cartEmpty";
             else
-                return cartContent + "....................\nTOTAL = " + sum + " €";
+                return cartContent;
         } else
             return "Veuillez vous authentifier.";
     }
@@ -196,7 +200,7 @@ public class Jclient implements Runnable {
                     sum++;
             }
             if (sum == 0)
-                return "Votre panier est vide.";
+                return "cartEmpty";
             for (int i = 1 ; i <= idMax ; i++) {
                 if (daoModels_.getCartDAO().find(i).getUserId() == this.userId_) {
                     cart = daoModels_.getCartDAO().find(i);

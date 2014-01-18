@@ -91,13 +91,12 @@ public class ProductsModel {
 
     @Override
     public String toString() {
-        String str = "[" + this.getId() + "] " + this.getDesignation() + "\n";
+        String str =  "|" + this.getId() + ";" + this.getDesignation() + ";";
         if (this.getDescription() != null)
-            str += this.getDescription() + "\n";
+            str += this.getDescription() + ";";
         else
-            str += "Pas de description disponible.\n";
-        str += "Prix : " + this.getPrice() + "€ - " + this.getQuantities() + " en stock.\n";
-        str += ".....................................";
+            str += "Pas de description disponible.;";
+        str += this.getCategory() + ";" + this.getPrice() + ";" + this.getQuantities();
         return str;
     }
 }
