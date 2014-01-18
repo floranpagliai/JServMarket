@@ -1,4 +1,5 @@
-JservMarket
+JServMarket
+=============
 
 Serveur Java multi-thread avec gestion de base de donnée SQL pour l'e-commerce.
 GUI coté serveur avec affichage du contenu des tables de la BD.
