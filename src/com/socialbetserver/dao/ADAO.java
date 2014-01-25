@@ -1,17 +1,17 @@
-package com.jservmarket.dao;
+package com.socialbetserver.dao;
 
-import com.jservmarket.ConnexionMySQL;
+import com.socialbetserver.ConnexionPostgreSQL;
 
 import java.sql.Connection;
 
 /**
- * com.jservmarket.dao in JservMarket
+ * com.socialbetserver.dao in SocialBetServer
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 22:58
  */
 
 public abstract class ADAO<T> {
-    public Connection connect = ConnexionMySQL.getInstance();
+    public Connection connect = ConnexionPostgreSQL.getInstance();
 
     /**
      * Permet de créer une entrée dans la base de données

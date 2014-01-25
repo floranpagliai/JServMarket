@@ -1,9 +1,9 @@
-package com.jservmarket;
+package com.socialbetserver;
 
 import java.security.MessageDigest;
 
 /**
- * com.jservmarketmvc in JservMarket
+ * com.jservmarketmvc in SocialBetServer
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 05/12/2013 at 14:50
  */

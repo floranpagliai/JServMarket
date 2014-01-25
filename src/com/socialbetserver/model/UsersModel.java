@@ -1,7 +1,7 @@
-package com.jservmarket.model;
+package com.socialbetserver.model;
 
 /**
- * com.jservmarket.model in JservMarket
+ * com.socialbetserver.model in SocialBetServer
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 22:45
  */
@@ -10,6 +10,7 @@ public class UsersModel {
     private int id_;
     private String login_;
     private String password_;
+    private int rank_;
 
     public UsersModel() {
         this.id_ = -1;
@@ -23,10 +24,11 @@ public class UsersModel {
         this.password_ = password;
     }
 
-    public UsersModel(int id, String login, String password) {
+    public UsersModel(int id, String login, String password, int rank) {
         this.id_ = id;
         this.login_ = login;
         this.password_ = password;
+        this.rank_ = rank;
     }
 
     public int getId() {
@@ -53,10 +55,17 @@ public class UsersModel {
         this.password_ = password;
     }
 
+    public int getRank_() {
+        return rank_;
+    }
+
+    public void setRank(int rank) {
+        this.rank_ = rank;
+    }
+
     @Override
     public String toString() {
-        String str = "[" + this.getId() + "] " + this.getLogin() + "\n";
-        str += ".....................................";
+        String str = "|" + this.getId() + ";" + this.getLogin() + ";" + this.getRank_();
         return str;
     }
 

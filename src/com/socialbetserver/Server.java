@@ -1,34 +1,28 @@
-package com.jservmarket;
+package com.socialbetserver;
 
-import com.jservmarket.controler.Controler;
-import com.jservmarket.dao.DAOModels;
-import com.jservmarket.controler.Jclient;
-import com.jservmarket.view.Jview;
+import com.socialbetserver.dao.DAOModels;
+import com.socialbetserver.controler.Jclient;
 
 import java.net.ServerSocket;
 import java.util.Vector;
 
 /**
- * com.jservmarket in JservMarket
+ * com.socialbetserver in SocialBetServer
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 23:01
  */
 
-public class JservMarket {
+public class Server {
     public Vector usersLogged = new Vector();
     private Integer usersConnected = 0;
-    public static void main(String args[]) {
-        JservMarket serveur = new JservMarket();
 
+    public static void main(String args[]) {
+        String retval = "";
+        Server serveur = new Server();
         DAOModels daoModels = new DAOModels();
         try {
             Integer port = 4242;
             ServerSocket ss = new ServerSocket(port.intValue());
-            Jview jview = new Jview(daoModels);
-            Controler controler =  new Controler(daoModels, jview, serveur);
-            jview.printUsers.addActionListener(controler);
-            jview.printCategories.addActionListener(controler);
-            jview.printProducts.addActionListener(controler);
             while (true) {
                 new Jclient(ss.accept(), daoModels, serveur);
             }
