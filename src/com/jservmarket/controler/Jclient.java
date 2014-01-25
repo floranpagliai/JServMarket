@@ -96,6 +96,8 @@ public class Jclient implements Runnable {
             }
         } else if (tokenCmds[0].equalsIgnoreCase("addtocart") && tokenCmds.length == 2)
             out_.println(addToCart(tokenCmds[1]));
+        else if (tokenCmds[0].equalsIgnoreCase("delfromcart") && tokenCmds.length == 2)
+            out_.println(delFromCart(tokenCmds[1]));
         else if (tokenCmds[0].equalsIgnoreCase("getcartcontent"))
             out_.println(getCartContent());
         else if (tokenCmds[0].equalsIgnoreCase("pay"))
@@ -165,6 +167,33 @@ public class Jclient implements Runnable {
                 return "addtocartOk";
             } else
                 return "addtocartError";
+        } else
+            return "Veuillez vous authentifier.";
+    }
+
+    private String delFromCart(String cmd) {
+        CartModel cart;
+        int id = -1;
+        try {
+            id = Integer.parseInt(cmd);
+        } catch (NumberFormatException e) {
+            return "Veuillez entrer un nombre.";
+        }
+        boolean updated = false;
+        if (this.userId_ != -1) {
+            if (daoModels_.getCartDAO().find(id).getId() != -1) {
+                cart = daoModels_.getCartDAO().find(id);
+                ProductsModel product = daoModels_.getProductDAO().find(cart.getProductId());
+                if (cart.getQuantity() > 1) {
+                    cart.setQuantity(cart.getQuantity() - 1);
+                    daoModels_.getCartDAO().update(cart);
+                } else
+                    daoModels_.getCartDAO().delete(cart);
+                product.setQuantities(product.getQuantities() + 1);
+                daoModels_.getProductDAO().update(product);
+                return "delfromcartOk";
+            } else
+                return "delfromcartError";
         } else
             return "Veuillez vous authentifier.";
     }
