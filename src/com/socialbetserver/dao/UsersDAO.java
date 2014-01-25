@@ -1,13 +1,13 @@
-package com.jservmarket.dao;
+package com.socialbetserver.dao;
 
-import com.jservmarket.model.UsersModel;
+import com.socialbetserver.model.UsersModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * com.jservmarket.dao in JservMarket
+ * com.socialbetserver.dao in SocialBetServer
  * Made by Floran Pagliai <floran.pagliai@gmail.com>
  * Started on 03/12/2013 at 23:03
  */
@@ -43,8 +43,9 @@ public class UsersDAO extends ADAO<UsersModel> {
             if (result.first())
                 obj = new UsersModel(
                         id,
-                        result.getString("login"),
-                        result.getString("password")
+                        result.getString("name"),
+                        result.getString("encrypted_password"),
+                        result.getInt("rank")
                 );
 
         } catch (SQLException e) {
@@ -54,7 +55,7 @@ public class UsersDAO extends ADAO<UsersModel> {
     }
 
     @Override
-    public UsersModel findByKey(String key, String login) {
+    public UsersModel findByKey(String key, String text) {
         UsersModel obj = new UsersModel();
         try {
             ResultSet result = this.connect
@@ -62,13 +63,14 @@ public class UsersDAO extends ADAO<UsersModel> {
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeQuery(
-                            "SELECT * FROM users WHERE " + key + " = '" + login + "'"
+                            "SELECT * FROM users WHERE " + key + " = '" + text + "'"
                     );
             if (result.first())
                 obj = new UsersModel(
                         result.getInt("id"),
-                        result.getString("login"),
-                        result.getString("password")
+                        result.getString("name"),
+                        result.getString("encrypted_password"),
+                        result.getInt("rank")
                 );
 
         } catch (SQLException e) {
