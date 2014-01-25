@@ -7,10 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/postgresql.jdbc4.jar!/" />
+          <root url="jar://$MODULE_DIR$/mysql-connector-java-5.1.27-bin.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

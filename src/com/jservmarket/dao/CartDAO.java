@@ -1,27 +1,22 @@
-package com.socialbetserver.dao;
+package com.jservmarket.dao;
 
-import com.socialbetserver.model.UsersModel;
+import com.jservmarket.model.CartModel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * com.socialbetserver.dao in SocialBetServer
- * Made by Floran Pagliai <floran.pagliai@gmail.com>
- * Started on 03/12/2013 at 23:03
- */
-
-public class UsersDAO extends ADAO<UsersModel> {
+public class CartDAO extends ADAO<CartModel> {
     @Override
-    public UsersModel create(UsersModel obj) {
+    public CartModel create(CartModel obj) {
         try {
             PreparedStatement prepare = this.connect
                     .prepareStatement(
-                            "INSERT INTO users (login, password) VALUES(?, ?)"
+                            "INSERT INTO cart (userid, productid, quantity) VALUES(?, ?, ?)"
                     );
-            prepare.setString(1, obj.getLogin());
-            prepare.setString(2, obj.getPassword());
+            prepare.setInt(1, obj.getUserId());
+            prepare.setInt(2, obj.getProductId());
+            prepare.setInt(3, obj.getQuantity());
             prepare.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -30,24 +25,25 @@ public class UsersDAO extends ADAO<UsersModel> {
     }
 
     @Override
-    public UsersModel find(int id) {
-        UsersModel obj = new UsersModel();
+    public CartModel find(int id) {
+        CartModel obj = new CartModel();
         try {
             ResultSet result = this.connect
                     .createStatement(
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeQuery(
-                            "SELECT * FROM users WHERE id = '" + id + "'"
+                            "SELECT * FROM cart INNER JOIN products ON cart.productid = products.id WHERE cart.id = '" + id + "'"
                     );
             if (result.first())
-                obj = new UsersModel(
+                obj = new CartModel(
                         id,
-                        result.getString("name"),
-                        result.getString("encrypted_password"),
-                        result.getInt("rank")
+                        result.getInt("userid"),
+                        result.getInt("productid"),
+                        result.getInt("quantity"),
+                        result.getString("designation"),
+                        result.getFloat("price")
                 );
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,24 +51,26 @@ public class UsersDAO extends ADAO<UsersModel> {
     }
 
     @Override
-    public UsersModel findByKey(String key, String text) {
-        UsersModel obj = new UsersModel();
+    public CartModel findByKey(String key, String keyEntry) {
+        CartModel obj = new CartModel();
         try {
             ResultSet result = this.connect
                     .createStatement(
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeQuery(
-                            "SELECT * FROM users WHERE " + key + " = '" + text + "'"
+                            "SELECT * FROM cart INNER JOIN products ON cart.productid = products.id " +
+                                    "WHERE cart." + key + " = '" + keyEntry + "'"
                     );
             if (result.first())
-                obj = new UsersModel(
+                obj = new CartModel(
                         result.getInt("id"),
-                        result.getString("name"),
-                        result.getString("encrypted_password"),
-                        result.getInt("rank")
+                        result.getInt("userid"),
+                        result.getInt("productid"),
+                        result.getInt("quantity"),
+                        result.getString("designation"),
+                        result.getInt("price")
                 );
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -80,14 +78,14 @@ public class UsersDAO extends ADAO<UsersModel> {
     }
 
     @Override
-    public UsersModel update(UsersModel obj) {
+    public CartModel update(CartModel obj) {
         try {
             PreparedStatement prepare = this.connect
                     .prepareStatement(
-                            "UPDATE users SET login=? AND password=? WHERE id=?"
+                            "UPDATE cart SET quantity=? WHERE id=?"
                     );
-            prepare.setString(1, obj.getLogin());
-            prepare.setString(2, obj.getPassword());
+            prepare.setInt(1, obj.getQuantity());
+            prepare.setInt(2, obj.getId());
             prepare.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,14 +94,15 @@ public class UsersDAO extends ADAO<UsersModel> {
     }
 
     @Override
-    public void delete(UsersModel obj) {
+    public void delete(CartModel obj) {
         try {
             PreparedStatement prepare = this.connect
                     .prepareStatement(
-                            "DELETE FROM users WHERE id=?"
+                            "DELETE FROM cart WHERE id=?"
                     );
             prepare.setInt(1, obj.getId());
             prepare.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -117,7 +116,7 @@ public class UsersDAO extends ADAO<UsersModel> {
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeQuery(
-                            "SELECT * FROM users"
+                            "SELECT * FROM cart"
                     );
             result.last();
             return result.getInt("id");
@@ -135,7 +134,7 @@ public class UsersDAO extends ADAO<UsersModel> {
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE
                     ).executeQuery(
-                            "SELECT * FROM users"
+                            "SELECT * FROM cart"
                     );
             result.last();
             return result.getRow();

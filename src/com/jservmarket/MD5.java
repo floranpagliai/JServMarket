@@ -1,12 +1,6 @@
-package com.socialbetserver;
+package com.jservmarket;
 
 import java.security.MessageDigest;
-
-/**
- * com.jservmarketmvc in SocialBetServer
- * Made by Floran Pagliai <floran.pagliai@gmail.com>
- * Started on 05/12/2013 at 14:50
- */
 
 public class MD5 {
     public static String md5( String source ) {
